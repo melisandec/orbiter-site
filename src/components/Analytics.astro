@@ -1,0 +1,94 @@
+---
+// Simple analytics component
+// You can integrate with Google Analytics, Plausible, or any other analytics service
+---
+
+<!-- Google Analytics (replace with your tracking ID) -->
+<script>
+  // Google Analytics 4
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'GA_MEASUREMENT_ID'); // Replace with your actual GA4 measurement ID
+</script>
+
+<!-- Plausible Analytics (privacy-focused alternative) -->
+<script defer data-domain="melisande.dev" src="https://plausible.io/js/script.js"></script>
+
+<!-- Custom analytics tracking -->
+<script>
+  // Track page views
+  function trackPageView() {
+    // You can send data to your own analytics endpoint
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        event: 'page_view',
+        url: window.location.href,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        referrer: document.referrer
+      })
+    }).catch(error => {
+      console.log('Analytics tracking failed:', error);
+    });
+  }
+
+  // Track scroll depth
+  function trackScrollDepth() {
+    let maxScroll = 0;
+    const trackScroll = () => {
+      const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (scrollPercent > maxScroll) {
+        maxScroll = scrollPercent;
+        if (maxScroll % 25 === 0) { // Track at 25%, 50%, 75%, 100%
+          fetch('/api/analytics', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              event: 'scroll_depth',
+              depth: maxScroll,
+              url: window.location.href,
+              timestamp: new Date().toISOString()
+            })
+          }).catch(error => {
+            console.log('Scroll tracking failed:', error);
+          });
+        }
+      }
+    };
+
+    window.addEventListener('scroll', trackScroll, { passive: true });
+  }
+
+  // Track time on page
+  function trackTimeOnPage() {
+    const startTime = Date.now();
+    
+    window.addEventListener('beforeunload', () => {
+      const timeOnPage = Math.round((Date.now() - startTime) / 1000);
+      
+      // Send beacon for reliable tracking on page unload
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/analytics', JSON.stringify({
+          event: 'time_on_page',
+          duration: timeOnPage,
+          url: window.location.href,
+          timestamp: new Date().toISOString()
+        }));
+      }
+    });
+  }
+
+  // Initialize tracking when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    trackPageView();
+    trackScrollDepth();
+    trackTimeOnPage();
+  });
+</script>

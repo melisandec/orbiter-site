@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Experience from '../components/Experience.astro';
+import Projects from '../components/Projects.astro';
+import DesignPortfolio from '../components/DesignPortfolio.astro';
+import GitHubStats from '../components/GitHubStats.astro';
+import Blog from '../components/Blog.astro';
+import Contact from '../components/Contact.astro';
+import '../styles/animations.css';
+import '../styles/global.css';
+
+import {
+	heroData,
+	aboutData,
+	experienceData,
+	projectsData,
+	designData,
+	blogData,
+	contactData
+} from '../data/portfolio';
+
+// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
+// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+---
+
+<Layout title="Mélisande Cornet - Software Engineer & Product Designer">
+	<Hero {...heroData} />
+	<About {...aboutData} />
+	<Experience experiences={experienceData} />
+	<Projects projects={projectsData} />
+	<DesignPortfolio designs={designData} />
+	<GitHubStats username="melisandec" />
+	<Blog posts={blogData} />
+	<Contact {...contactData} />
+</Layout>

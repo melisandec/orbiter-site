@@ -1,0 +1,221 @@
+---
+import '../styles/components/contact.css';
+
+interface SocialLink {
+  name: string;
+  url: string;
+  icon?: string;
+}
+
+interface Props {
+  email: string;
+  socialLinks: SocialLink[];
+}
+
+const { email, socialLinks } = Astro.props;
+---
+
+<section id="contact" class="contact">
+  <div class="container">
+    <h2 class="animate-fade-in">Get In Touch</h2>
+    <div class="contact-content">
+      <div class="contact-info animate-fade-in">
+        <p>I'm always open to new opportunities and collaborations. Feel free to reach out!</p>
+        <div class="contact-links">
+          <a href={`mailto:${email}`} class="btn primary hover-lift">Email Me</a>
+          {socialLinks.map((link) => (
+            <a href={link.url} target="_blank" rel="noopener noreferrer" class="btn secondary hover-lift">
+              {link.icon && <img src={link.icon} alt={link.name} />}
+              {link.name}
+            </a>
+          ))}
+        </div>
+      </div>
+      
+      <div class="contact-form animate-slide-in-up">
+        <h3>Send me a message</h3>
+        <form id="contact-form" class="form">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn primary">Send Message</button>
+        </form>
+        <div id="form-message" class="form-message"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding: 6rem 0;
+    background: var(--secondary-background);
+  }
+
+  .contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .contact-info {
+    text-align: center;
+  }
+
+  .contact-info p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--text-color);
+  }
+
+  .contact-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .contact-links img {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .contact-form {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .contact-form h3 {
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background: var(--background-color);
+    color: var(--text-color);
+    transition: border-color 0.3s ease;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .form-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .form-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .form-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  @media (max-width: 768px) {
+    .contact-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .contact-links {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .contact-links .btn {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contact-form');
+    const messageDiv = document.getElementById('form-message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        message: formData.get('message')
+      };
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          messageDiv.textContent = result.message;
+          messageDiv.className = 'form-message success';
+          form.reset();
+        } else {
+          messageDiv.textContent = result.message;
+          messageDiv.className = 'form-message error';
+        }
+      } catch (error) {
+        messageDiv.textContent = 'Something went wrong. Please try again later.';
+        messageDiv.className = 'form-message error';
+      }
+    });
+  });
+</script> 

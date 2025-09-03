@@ -1,0 +1,300 @@
+---
+interface GitHubRepo {
+  name: string;
+  description: string;
+  html_url: string;
+  language: string;
+  stargazers_count: number;
+  forks_count: number;
+  updated_at: string;
+}
+
+interface Props {
+  username: string;
+  repos?: GitHubRepo[];
+}
+
+const { username, repos = [] } = Astro.props;
+
+// Function to format date
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  });
+}
+
+// Function to get language color
+function getLanguageColor(language: string) {
+  const colors: Record<string, string> = {
+    'TypeScript': '#3178c6',
+    'JavaScript': '#f7df1e',
+    'Python': '#3776ab',
+    'Java': '#ed8b00',
+    'CSS': '#1572b6',
+    'HTML': '#e34f26',
+    'Vue': '#4fc08d',
+    'React': '#61dafb',
+    'Astro': '#ff5d01',
+    'Go': '#00add8',
+    'Rust': '#000000'
+  };
+  return colors[language] || '#6b7280';
+}
+---
+
+<section class="github-stats">
+  <div class="container">
+    <h2 class="animate-fade-in">GitHub Activity</h2>
+    <p class="section-subtitle animate-fade-in">My latest repositories and contributions</p>
+    
+    <div id="github-repos" class="github-placeholder">
+      <p>Loading GitHub repositories...</p>
+      <a href={`https://github.com/${username}`} target="_blank" rel="noopener noreferrer" class="btn primary">
+        View on GitHub
+      </a>
+    </div>
+    
+    <div class="github-cta">
+      <a href={`https://github.com/${username}`} target="_blank" rel="noopener noreferrer" class="btn secondary">
+        View All Repositories
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .github-stats {
+    padding: 6rem 0;
+    background: var(--background-color);
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+  }
+
+  .repos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .repo-card {
+    background: var(--card-background);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+
+  .repo-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15);
+  }
+
+  .repo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .repo-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .repo-header h3 a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .repo-header h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .repo-stats {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.7;
+  }
+
+  .repo-description {
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+
+  .repo-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+
+  .language-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-weight: 500;
+  }
+
+  .language-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .updated-date {
+    color: var(--text-color);
+    opacity: 0.6;
+  }
+
+  .github-placeholder {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-color);
+    opacity: 0.8;
+  }
+
+  .github-cta {
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .repos-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .repo-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .repo-footer {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const reposContainer = document.getElementById('github-repos');
+    const username = 'melisandec';
+
+    try {
+      const response = await fetch(`/api/github?username=${username}`);
+      const data = await response.json();
+
+      if (data.success && data.repos.length > 0) {
+        const reposGrid = document.createElement('div');
+        reposGrid.className = 'repos-grid';
+
+        data.repos.forEach((repo: any) => {
+          const repoCard = document.createElement('article');
+          repoCard.className = 'repo-card hover-lift animate-fade-in';
+          
+          const languageColor = getLanguageColor(repo.language);
+          const updatedDate = new Date(repo.updated_at).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          });
+
+          repoCard.innerHTML = `
+            <div class="repo-header">
+              <h3>
+                <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">
+                  ${repo.name}
+                </a>
+              </h3>
+              <div class="repo-stats">
+                <span class="stat">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                  ${repo.stargazers_count}
+                </span>
+                <span class="stat">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                  ${repo.forks_count}
+                </span>
+              </div>
+            </div>
+            
+            <p class="repo-description">${repo.description || 'No description available'}</p>
+            
+            <div class="repo-footer">
+              ${repo.language ? `
+                <span class="language-tag" style="background-color: ${languageColor}20; color: ${languageColor}">
+                  <span class="language-dot" style="background-color: ${languageColor}"></span>
+                  ${repo.language}
+                </span>
+              ` : ''}
+              <span class="updated-date">Updated ${updatedDate}</span>
+            </div>
+          `;
+
+          reposGrid.appendChild(repoCard);
+        });
+
+        reposContainer.innerHTML = '';
+        reposContainer.appendChild(reposGrid);
+      } else {
+        reposContainer.innerHTML = `
+          <div class="github-placeholder">
+            <p>Unable to load repositories. <a href="https://github.com/${username}" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error loading GitHub repos:', error);
+      reposContainer.innerHTML = `
+        <div class="github-placeholder">
+          <p>Error loading repositories. <a href="https://github.com/${username}" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
+        </div>
+      `;
+    }
+  });
+
+  function getLanguageColor(language: string) {
+    const colors: Record<string, string> = {
+      'TypeScript': '#3178c6',
+      'JavaScript': '#f7df1e',
+      'Python': '#3776ab',
+      'Java': '#ed8b00',
+      'CSS': '#1572b6',
+      'HTML': '#e34f26',
+      'Vue': '#4fc08d',
+      'React': '#61dafb',
+      'Astro': '#ff5d01',
+      'Go': '#00add8',
+      'Rust': '#000000'
+    };
+    return colors[language] || '#6b7280';
+  }
+</script>

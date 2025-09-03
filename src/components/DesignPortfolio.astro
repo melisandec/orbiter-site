@@ -1,0 +1,192 @@
+---
+interface Design {
+  title: string;
+  description: string;
+  tags: string[];
+  links: {
+    behance?: string;
+    figma?: string;
+    portfolio?: string;
+  };
+  image: string;
+}
+
+interface Props {
+  designs: Design[];
+}
+
+const { designs } = Astro.props;
+
+
+---
+
+<section id="design" class="design-portfolio">
+  <div class="container">
+    <h2 class="animate-fade-in">Design Portfolio</h2>
+    <p class="section-subtitle animate-fade-in">Where creativity meets functionality</p>
+    
+    <div class="design-grid">
+      {designs && designs.length > 0 ? designs.map((design) => (
+        <article class="design-card hover-lift hover-glow animate-fade-in">
+          <div class="design-image">
+            <img src={design.image} alt={design.title} loading="lazy" />
+            <div class="design-overlay">
+              <div class="design-links">
+                {design.links.behance && (
+                  <a href={design.links.behance} target="_blank" rel="noopener noreferrer" class="btn small">
+                    View on Behance
+                  </a>
+                )}
+                {design.links.figma && (
+                  <a href={design.links.figma} target="_blank" rel="noopener noreferrer" class="btn small secondary">
+                    Figma
+                  </a>
+                )}
+                {design.links.portfolio && (
+                  <a href={design.links.portfolio} target="_blank" rel="noopener noreferrer" class="btn small secondary">
+                    Portfolio
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+          <div class="design-content">
+            <h3>{design.title}</h3>
+            <p>{design.description}</p>
+            <div class="design-tags">
+              {design.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </article>
+      )) : (
+        <div class="no-designs">
+          <p>No design projects available at the moment.</p>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .design-portfolio {
+    padding: 6rem 0;
+    background: var(--card-bg);
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+  }
+
+  .design-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .design-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .design-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+  }
+
+  .design-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .design-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .design-card:hover .design-overlay {
+    opacity: 1;
+  }
+
+  .design-card:hover .design-image img {
+    transform: scale(1.1);
+  }
+
+  .design-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .design-content {
+    padding: 2rem;
+  }
+
+  .design-content h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+  }
+
+  .design-content p {
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .design-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 1rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .design-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .design-links {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  .no-designs {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-color);
+    opacity: 0.8;
+  }
+</style>

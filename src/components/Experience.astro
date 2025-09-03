@@ -1,0 +1,38 @@
+---
+import '../styles/components/experience.css';
+
+interface Experience {
+  title: string;
+  company: string;
+  date: string;
+  responsibilities: string[];
+}
+
+interface Props {
+  experiences: Experience[];
+}
+
+const { experiences } = Astro.props;
+---
+
+<section id="experience" class="experience">
+  <div class="container">
+    <h2 class="animate-fade-in">Experience</h2>
+    <div class="timeline">
+      {experiences.map((experience) => (
+        <div class="timeline-item animate-fade-in">
+          <div class="timeline-content hover-lift">
+            <h3>{experience.title}</h3>
+            <p class="company">{experience.company}</p>
+            <p class="date">{experience.date}</p>
+            <ul>
+              {experience.responsibilities.map((responsibility) => (
+                <li>{responsibility}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section> 

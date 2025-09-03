@@ -1,0 +1,199 @@
+---
+import '../styles/components/about.css';
+
+interface TechStackCategory {
+  title: string;
+  items: { name: string; icon?: string }[];
+}
+
+interface TechStack {
+  name: string;
+  icon: string;
+}
+
+interface Props {
+  description: string[];
+  techStack: TechStack[];
+}
+
+const { description, techStack } = Astro.props;
+
+const iconMap: Record<string, string> = {
+  'JavaScript (ES6+)': '/icons/javascript.svg',
+  'TypeScript': '/icons/typescript.svg',
+  'PHP': '/icons/php.svg',
+  'Python': '/icons/python.svg',
+  'SQL': '/icons/sql.svg',
+  'R': '/icons/r.svg',
+  'React': '/icons/react.svg',
+  'Node.js': '/icons/nodejs.svg',
+  'Nest': '/icons/nest.svg',
+  'Next': '/icons/nextjs.svg',
+  'Vue': '/icons/vue.svg',
+  'Git': '/icons/git.svg',
+  'Docker': '/icons/docker.svg',
+  'RStudio': '/icons/rstudio.svg',
+  'Microsoft Excel': '/icons/excel.svg',
+  'IBM SPSS Statistics': '/icons/spss.svg',
+  'Tableau': '/icons/tableau.svg',
+  'Figma': '/icons/figma.svg',
+  'MongoDB': '/icons/mongodb.svg',
+  'PostgreSQL': '/icons/postgresql.svg',
+  'Adobe XD': '/icons/adobexd.svg',
+  'Sketch': '/icons/sketch.svg',
+  'Adobe Illustrator': '/icons/illustrator.svg',
+  'Adobe Photoshop': '/icons/photoshop.svg',
+};
+
+const techStackCategories: TechStackCategory[] = [
+  {
+    title: 'Languages',
+    items: [
+      { name: 'JavaScript (ES6+)', icon: iconMap['JavaScript (ES6+)'] },
+      { name: 'TypeScript', icon: iconMap['TypeScript'] },
+      { name: 'PHP', icon: iconMap['PHP'] },
+      { name: 'Python', icon: iconMap['Python'] },
+      { name: 'SQL', icon: iconMap['SQL'] },
+      { name: 'R', icon: iconMap['R'] },
+    ],
+  },
+  {
+    title: 'Frameworks',
+    items: [
+      { name: 'React', icon: iconMap['React'] },
+      { name: 'Node.js', icon: iconMap['Node.js'] },
+      { name: 'Nest', icon: iconMap['Nest'] },
+      { name: 'Next', icon: iconMap['Next'] },
+      { name: 'Vue', icon: iconMap['Vue'] },
+    ],
+  },
+  {
+    title: 'Tools',
+    items: [
+      { name: 'Git', icon: iconMap['Git'] },
+      { name: 'Docker', icon: iconMap['Docker'] },
+      { name: 'RStudio', icon: iconMap['RStudio'] },
+      { name: 'Microsoft Excel', icon: iconMap['Microsoft Excel'] },
+      { name: 'IBM SPSS Statistics', icon: iconMap['IBM SPSS Statistics'] },
+      { name: 'Tableau', icon: iconMap['Tableau'] },
+      { name: 'Figma', icon: iconMap['Figma'] },
+    ],
+  },
+  {
+    title: 'Databases',
+    items: [
+      { name: 'MongoDB', icon: iconMap['MongoDB'] },
+      { name: 'PostgreSQL', icon: iconMap['PostgreSQL'] },
+    ],
+  },
+  {
+    title: 'Product Design',
+    items: [
+      { name: 'Figma', icon: iconMap['Figma'] },
+      { name: 'Adobe XD', icon: iconMap['Adobe XD'] },
+      { name: 'Sketch', icon: iconMap['Sketch'] },
+      { name: 'Adobe Illustrator', icon: iconMap['Adobe Illustrator'] },
+      { name: 'Adobe Photoshop', icon: iconMap['Adobe Photoshop'] },
+    ],
+  },
+];
+---
+
+<section id="about" class="about">
+  <div class="container">
+    <h2 class="animate-fade-in">About Me</h2>
+    <div class="about-content">
+      <div class="about-text animate-fade-in">
+        {description.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+      <div class="tech-stack">
+        {techStack.map((tech) => (
+          <div class="tech-item hover-lift animate-fade-in">
+            <img src={tech.icon} alt={tech.name} />
+            <span>{tech.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div class="tech-stack-section animate-fade-in">
+      <h3>Tech Stack</h3>
+      <div class="tech-stack-categories">
+        {techStackCategories.map((category) => (
+          <div class="tech-stack-category">
+            <h4>{category.title}</h4>
+            <ul>
+              {category.items.map((item) => (
+                <li>
+                  {item.icon && <img src={item.icon} alt={item.name} class="tech-list-icon" />} {item.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    padding: 6rem 0;
+    background: var(--bg-color);
+  }
+
+  .about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .about-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+
+  .about-text p {
+    margin-bottom: 1.5rem;
+  }
+
+  .tech-stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 2rem;
+  }
+
+  .tech-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    text-align: center;
+  }
+
+  .tech-item img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .tech-item span {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .about-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .tech-stack {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style> 

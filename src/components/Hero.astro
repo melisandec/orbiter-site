@@ -1,0 +1,95 @@
+---
+import '../styles/components/hero.css';
+
+interface Props {
+  name: string;
+  role: string;
+  skills: string[];
+  passion: string;
+}
+
+const { name, role, skills, passion } = Astro.props;
+
+const skillsHtml = skills.map(skill => `<span class='string'>'${skill}'</span>`).join(',<br>    ');
+
+const codePreview = `<span class='keyword'>const</span> developer = {
+  <span class='property'>name</span>: <span class='string'>'${name}'</span>,
+  <span class='property'>role</span>: <span class='string'>'${role}'</span>,
+  <span class='property'>skills</span>: [
+    ${skillsHtml}
+  ],
+  <span class='property'>passion</span>: <span class='string'>'${passion}'</span>
+}`;
+---
+
+<section class="hero">
+  <div class="hero-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1 animate-float"></div>
+      <div class="shape shape-2 animate-float" style="animation-delay: 1s;"></div>
+      <div class="shape shape-3 animate-float" style="animation-delay: 2s;"></div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text animate-fade-in">
+        <div class="greeting">
+          <span class="wave">👋</span>
+          <span>Hi, I'm</span>
+        </div>
+        <h1>
+          <span class="highlight animate-typewriter typewriter-text">{name}</span>
+        </h1>
+        <p class="subtitle animate-slide-in-up">{role}</p>
+        <div class="skills-preview animate-slide-in-up">
+          <span class="skills-label">Tech Stack:</span>
+          <div class="skills-tags">
+            {skills.slice(0, 4).map((skill) => (
+              <span class="skill-tag">{skill}</span>
+            ))}
+          </div>
+        </div>
+        <div class="cta-buttons animate-slide-in-up">
+          <a href="#projects" class="btn primary hover-lift">
+            <span>View My Work</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </a>
+          <a href="#contact" class="btn secondary hover-lift">
+            <span>Contact Me</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+      <div class="code-animation animate-slide-in-right">
+        <div class="code-header">
+          <div class="code-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="code-title">developer.js</span>
+        </div>
+        <pre><code set:html={codePreview}></code></pre>
+        <div class="code-footer">
+          <span class="cursor-blink">_</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="scroll-indicator animate-fade-in">
+      <div class="scroll-text">Scroll to explore</div>
+      <div class="scroll-arrow animate-pulse">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M7 13l3 3 3-3M7 6l3 3 3-3"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section> 
